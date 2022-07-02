@@ -5,6 +5,7 @@
   "author": "Max",
   "private": true,
   "license": "UNLICENSED",
+  "homepage": "https://nest-api-app.herokuapp.com",
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
