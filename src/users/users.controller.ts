@@ -1,42 +1,62 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Put,
+  Req,
 } from '@nestjs/common';
-import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UsersService } from './users.service';
+import { User } from './schemas/user.schema';
+import { Request } from 'express';
 
 @Controller('api/v1/users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly userService: UsersService) {}
 
-  @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.usersService.findAll();
+  @Get('')
+  getAllUsers(@Req() request: Request): Promise<User[]> {
+    return this.userService.getAllUsers(request);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(id);
+  getOne(@Param('id') id: string): Promise<User> {
+    return this.userService.getUserById(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(id, updateUserDto);
+  @Post()
+  @HttpCode(HttpStatus.CREATED)
+  create(@Body() dto: CreateUserDto): Promise<User> {
+    return this.userService.createUser(dto);
+  }
+  @Post('')
+  @HttpCode(HttpStatus.CREATED)
+  createUser(@Body() dto: CreateUserDto): Promise<User> {
+    return this.userService.createUser(dto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(id);
+  remove(@Param('id') id: string): Promise<User> {
+    return this.userService.remove(id);
+  }
+
+  @Put(':id')
+  update(@Body() dto: UpdateUserDto, @Param('id') id: string): Promise<User> {
+    return this.userService.update(id, dto);
+  }
+
+  @Patch(':id')
+  partialUpdate(
+    @Body() dto: UpdateUserDto,
+    @Param('id') id: string,
+  ): Promise<User> {
+    return this.userService.update(id, dto);
   }
 }
